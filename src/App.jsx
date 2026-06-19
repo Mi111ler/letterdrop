@@ -89,6 +89,7 @@ const T = {
     pack5: "5 letters", pack15: "15 letters", pack50: "50 letters",
     proPlan: "Pro — Unlimited",
     perMonth: "/ month",
+    bestValue: "Best value",
   },
   ru: {
     brand: "LetterDrop",
@@ -161,6 +162,7 @@ const T = {
     pack5: "5 писем", pack15: "15 писем", pack50: "50 писем",
     proPlan: "Pro — Безлимит",
     perMonth: "/ месяц",
+    bestValue: "Выгоднее всего",
   },
   kz: {
     brand: "LetterDrop",
@@ -233,6 +235,7 @@ const T = {
     pack5: "5 хат", pack15: "15 хат", pack50: "50 хат",
     proPlan: "Pro — Шексіз",
     perMonth: "/ ай",
+    bestValue: "Ең тиімді",
   }
 };
 
@@ -269,7 +272,7 @@ const styles = `
   .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
   .btn-ghost { background:transparent; color:var(--ink); border:1.5px solid var(--border); }
   .btn-ghost:hover { border-color:var(--ink); }
-  .btn-accent { background:var(--accent); color:var(--ink); font-weight:600; }
+  .btn-accent { background:var(--accent); color:#0D0D0D; font-weight:600; }
   .btn-accent:hover { opacity:0.85; }
   .btn-accent:disabled { opacity:0.5; cursor:not-allowed; }
   .btn-danger { background:transparent; color:var(--danger); border:1px solid var(--danger); padding:6px 12px; font-size:0.78rem; }
@@ -319,8 +322,8 @@ const styles = `
   .gen-layout { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; }
   .gen-form { background:var(--white); border:1px solid var(--border); padding:28px; }
   .gen-form h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:20px; }
-  .free-badge { display:inline-block; background:var(--accent); color:var(--ink); font-size:0.72rem; font-weight:700; padding:3px 8px; margin-bottom:16px; }
-  .no-free-badge { display:inline-block; background:#FFF5F5; color:var(--danger); border:1px solid #FED7D7; font-size:0.72rem; font-weight:600; padding:3px 8px; margin-bottom:16px; }
+  .free-badge { display:inline-block; background:var(--accent); color:#0D0D0D; font-size:0.72rem; font-weight:700; padding:3px 8px; margin-bottom:16px; }
+  .no-free-badge { display:inline-block; background:var(--paper); color:var(--danger); border:1px solid var(--danger); font-size:0.72rem; font-weight:600; padding:3px 8px; margin-bottom:16px; }
   .gen-output { background:var(--white); border:1px solid var(--border); padding:28px; min-height:300px; }
   .gen-output h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:16px; }
   .output-text { font-size:0.875rem; line-height:1.8; color:var(--ink); white-space:pre-wrap; }
@@ -370,13 +373,18 @@ const styles = `
   .theme-toggle button.active { background:var(--ink); color:var(--paper); }
 
   .pricing-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
-  .pricing-card { border:1px solid var(--border); padding:20px; text-align:center; cursor:pointer; transition:border-color 0.2s; }
-  .pricing-card:hover { border-color:var(--ink); }
-  .pricing-card .count { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; }
-  .pricing-card .price { font-size:1.5rem; font-weight:700; font-family:'Syne',sans-serif; margin:6px 0; }
+  .pricing-card { position:relative; border:1px solid var(--border); background:var(--paper); padding:22px 18px; text-align:center; cursor:pointer; transition:transform 0.15s, border-color 0.2s, box-shadow 0.2s; }
+  .pricing-card:hover { border-color:var(--ink); transform:translateY(-3px); }
+  .pricing-card .badge { position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--accent); color:#0D0D0D; font-size:0.62rem; font-weight:700; padding:2px 10px; letter-spacing:0.03em; white-space:nowrap; }
+  .pricing-card .count { font-size:0.78rem; font-weight:600; color:var(--mid); text-transform:uppercase; letter-spacing:0.04em; }
+  .pricing-card .price { font-family:'Syne',sans-serif; font-weight:800; font-size:1.7rem; margin:10px 0 4px; letter-spacing:-0.02em; }
   .pricing-card .per { font-size:0.7rem; color:var(--mid); }
-  .pricing-card.subscription { background:var(--ink); color:var(--paper); border-color:var(--ink); }
-  .pricing-card.subscription .per { color:var(--mid); }
+  .pricing-card.best { border:1px solid var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .pricing-card.subscription { background:var(--ink); border-color:var(--ink); }
+  .pricing-card.subscription .count { color:#999; }
+  .pricing-card.subscription .price { color:var(--paper); }
+  .pricing-card.subscription .per { color:#999; }
+  .pricing-card.subscription:hover { border-color:var(--accent); }
 
   .referral-box { background:var(--paper); border:1px dashed var(--border); padding:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .referral-code { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; letter-spacing:0.05em; }
@@ -388,6 +396,9 @@ const styles = `
 
   .contact-row { display:flex; align-items:center; gap:10px; font-size:0.875rem; padding:10px 0; }
   .contact-row a { color:var(--ink); text-decoration:underline; }
+  .whatsapp-widget { display:inline-flex; align-items:center; gap:10px; background:#25D366; color:#0D1F0F; text-decoration:none; font-weight:600; font-size:0.875rem; padding:10px 18px; margin-top:10px; transition:opacity 0.2s; }
+  .whatsapp-widget:hover { opacity:0.88; }
+  .whatsapp-icon { display:flex; align-items:center; }
 
   @media (max-width:768px) {
     .nav { padding:12px 16px; }
@@ -818,7 +829,8 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
             <div className="price">$10</div>
             <div className="per">$0.67 / letter</div>
           </div>
-          <div className="pricing-card">
+          <div className="pricing-card best">
+            <span className="badge">{t.bestValue}</span>
             <div className="count">{t.pack50}</div>
             <div className="price">$25</div>
             <div className="per">$0.50 / letter</div>
@@ -870,8 +882,14 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
       {/* Contact */}
       <div className="settings-section">
         <h3>{t.contactTitle}</h3>
-        <div className="contact-row">✉️ <a href="mailto:support@letterdrop.app">support@letterdrop.app</a></div>
-        <div className="contact-row">💬 <a href="https://t.me/letterdrop" target="_blank" rel="noreferrer">@letterdrop</a></div>
+        <div className="contact-row">✉️ <a href="mailto:lvarapov@gmail.com">lvarapov@gmail.com</a></div>
+        <div className="contact-row">📞 <a href="tel:+77779666733">+7 777 966 67 33</a></div>
+        <a href="https://wa.me/77779666733?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A3%20%D0%BC%D0%B5%D0%BD%D1%8F%20%D0%B2%D0%BE%D0%BF%D1%80%D0%BE%D1%81%20%D0%BF%D0%BE%20LetterDrop" target="_blank" rel="noreferrer" className="whatsapp-widget">
+          <span className="whatsapp-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.847 9.847 0 0012.04 2zm5.78 14.09c-.24.68-1.41 1.3-1.95 1.36-.5.06-1.13.08-1.83-.11-.42-.12-.96-.31-1.65-.61-2.92-1.26-4.82-4.2-4.97-4.4-.15-.2-1.19-1.58-1.19-3.01 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.81 2.01.88 2.16.07.15.12.32.02.52-.1.2-.15.32-.29.49-.15.17-.31.39-.44.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.48.13.65-.08.18-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.74-.17 1.43z"/></svg>
+          </span>
+          <span>WhatsApp</span>
+        </a>
       </div>
     </div>
   );
