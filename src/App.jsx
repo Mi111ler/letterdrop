@@ -329,6 +329,7 @@ function AuthForm({ mode, setMode, onAuth, t }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit() {
     setError(""); setNotice("");
@@ -371,7 +372,12 @@ function AuthForm({ mode, setMode, onAuth, t }) {
         </div>
         <div className="form-group">
           <label>{t.password}</label>
-          <input className="form-input" type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&handleSubmit()} />
+          <div style={{position:"relative"}}>
+            <input className="form-input" type={showPassword ? "text" : "password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&handleSubmit()} style={{paddingRight:"44px"}} />
+            <button type="button" onClick={()=>setShowPassword(p=>!p)} style={{position:"absolute",right:"10px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:"4px",color:"var(--mid)",fontSize:"0.9rem"}} aria-label="Toggle password visibility">
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
         </div>
         <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleSubmit} disabled={loading}>
           {loading ? "..." : mode==="signup" ? t.signUp : t.signIn}
