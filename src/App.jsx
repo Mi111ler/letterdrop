@@ -64,6 +64,31 @@ const T = {
     profileIncomplete: "Complete your profile first.",
     errorOccurred: "Something went wrong. Try again.",
     lang: "Language",
+    settings: "Settings",
+    balance: "Balance",
+    yourBalance: "Your balance",
+    buyCredits: "Buy letters",
+    subscribe: "Subscribe",
+    theme: "Appearance",
+    themeAuto: "Auto",
+    themeLight: "Light",
+    themeDark: "Dark",
+    referralTitle: "Invite friends, get free letters",
+    referralDesc: "Share your code — you both get 3 bonus letters when they sign up.",
+    copyCode: "Copy code",
+    faqTitle: "FAQ",
+    contactTitle: "Contact",
+    faq1q: "How does LetterDrop work?",
+    faq1a: "Fill in your profile once with your experience and skills. Then enter a job title and company, and we generate a tailored cover letter using AI.",
+    faq2q: "What happens after my free letters run out?",
+    faq2a: "You can buy a letter pack or subscribe to the Pro plan for unlimited letters.",
+    faq3q: "Can I edit a generated letter?",
+    faq3a: "Yes — copy the text and edit it anywhere. We recommend a quick personal pass before sending.",
+    faq4q: "Is my data safe?",
+    faq4a: "Your profile and letters are private and only visible to you.",
+    pack5: "5 letters", pack15: "15 letters", pack50: "50 letters",
+    proPlan: "Pro — Unlimited",
+    perMonth: "/ month",
   },
   ru: {
     brand: "LetterDrop",
@@ -111,6 +136,31 @@ const T = {
     profileIncomplete: "Сначала заполни профиль.",
     errorOccurred: "Что-то пошло не так. Попробуй снова.",
     lang: "Язык",
+    settings: "Настройки",
+    balance: "Баланс",
+    yourBalance: "Твой баланс",
+    buyCredits: "Купить письма",
+    subscribe: "Оформить подписку",
+    theme: "Оформление",
+    themeAuto: "Авто",
+    themeLight: "Светлая",
+    themeDark: "Тёмная",
+    referralTitle: "Приглашай друзей, получай письма бесплатно",
+    referralDesc: "Поделись кодом — вы оба получите по 3 бонусных письма после регистрации друга.",
+    copyCode: "Копировать код",
+    faqTitle: "Частые вопросы",
+    contactTitle: "Связаться с нами",
+    faq1q: "Как работает LetterDrop?",
+    faq1a: "Заполни профиль один раз — укажи опыт и навыки. Затем введи название вакансии и компанию, и мы сгенерируем письмо под них с помощью ИИ.",
+    faq2q: "Что будет, когда закончатся бесплатные письма?",
+    faq2a: "Можно купить пакет писем или оформить подписку Pro для безлимитной генерации.",
+    faq3q: "Можно ли редактировать сгенерированное письмо?",
+    faq3a: "Да — скопируй текст и отредактируй где угодно. Рекомендуем добавить личные штрихи перед отправкой.",
+    faq4q: "Безопасны ли мои данные?",
+    faq4a: "Твой профиль и письма приватны и видны только тебе.",
+    pack5: "5 писем", pack15: "15 писем", pack50: "50 писем",
+    proPlan: "Pro — Безлимит",
+    perMonth: "/ месяц",
   },
   kz: {
     brand: "LetterDrop",
@@ -158,6 +208,31 @@ const T = {
     profileIncomplete: "Алдымен профильді толтырыңыз.",
     errorOccurred: "Бірдеңе дұрыс болмады. Қайталаңыз.",
     lang: "Тіл",
+    settings: "Параметрлер",
+    balance: "Баланс",
+    yourBalance: "Сіздің балансыңыз",
+    buyCredits: "Хаттар сатып алу",
+    subscribe: "Жазылу",
+    theme: "Сыртқы түрі",
+    themeAuto: "Авто",
+    themeLight: "Жарық",
+    themeDark: "Қараңғы",
+    referralTitle: "Достарды шақыр, тегін хаттар ал",
+    referralDesc: "Кодыңды бөліс — дос тіркелгенде екеуің де 3 бонустық хат аласыңдар.",
+    copyCode: "Кодты көшіру",
+    faqTitle: "Жиі қойылатын сұрақтар",
+    contactTitle: "Байланыс",
+    faq1q: "LetterDrop қалай жұмыс істейді?",
+    faq1a: "Профильді бір рет толтыр — тәжірибең мен дағдыларыңды көрсет. Содан соң лауазым мен компанияны енгіз, біз ИИ көмегімен хат жасаймыз.",
+    faq2q: "Тегін хаттар бітсе не болады?",
+    faq2a: "Хаттар топтамасын сатып алуға немесе шексіз генерация үшін Pro жазылымын рәсімдеуге болады.",
+    faq3q: "Жасалған хатты өңдеуге бола ма?",
+    faq3a: "Иә — мәтінді көшіріп, кез келген жерде өңде. Жіберер алдында жеке штрихтар қосуды ұсынамыз.",
+    faq4q: "Менің деректерім қауіпсіз бе?",
+    faq4a: "Сенің профилің мен хаттарың жеке және тек саған көрінеді.",
+    pack5: "5 хат", pack15: "15 хат", pack50: "50 хат",
+    proPlan: "Pro — Шексіз",
+    perMonth: "/ ай",
   }
 };
 
@@ -170,8 +245,13 @@ const styles = `
     --mid: #6B6B6B; --border: #E0DDD7; --white: #FFFFFF;
     --danger: #E53E3E; --success: #38A169;
   }
+  [data-theme="dark"] {
+    --ink: #F2F2F0; --paper: #131313; --accent: #C8F135;
+    --mid: #9A9A9A; --border: #2A2A2A; --white: #1C1C1C;
+    --danger: #FF6B6B; --success: #4ADE80;
+  }
   html { font-size: 16px; }
-  body { background: var(--paper); color: var(--ink); font-family: 'Inter', sans-serif; line-height: 1.5; min-height: 100vh; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Inter', sans-serif; line-height: 1.5; min-height: 100vh; transition: background 0.2s, color 0.2s; }
 
   /* NAV */
   .nav { display:flex; justify-content:space-between; align-items:center; padding:16px 40px; border-bottom:1px solid var(--border); background:var(--paper); position:sticky; top:0; z-index:100; }
@@ -261,14 +341,53 @@ const styles = `
   .history-actions { display:flex; gap:8px; margin-top:12px; }
 
   /* UPGRADE */
-  .upgrade-banner { background:var(--ink); color:var(--white); padding:32px; margin-bottom:32px; }
+  .upgrade-banner { background:var(--ink); color:var(--paper); padding:32px; margin-bottom:32px; }
   .upgrade-banner h3 { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; margin-bottom:8px; }
-  .upgrade-banner p { font-size:0.875rem; color:#aaa; margin-bottom:20px; }
+  .upgrade-banner p { font-size:0.875rem; color:var(--mid); margin-bottom:20px; }
   .upgrade-plans { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .upgrade-plan { border:1px solid #333; padding:20px; cursor:pointer; transition:border-color 0.2s; }
   .upgrade-plan:hover { border-color:var(--accent); }
-  .upgrade-plan .price { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; }
+  .upgrade-plan .price { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; color:var(--paper); }
   .upgrade-plan .desc { font-size:0.78rem; color:#888; margin-top:4px; }
+
+  /* BALANCE */
+  .balance-bar { display:flex; align-items:center; justify-content:space-between; background:var(--white); border:1px solid var(--border); padding:18px 24px; margin-bottom:24px; }
+  .balance-amount { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; letter-spacing:-0.02em; }
+  .balance-label { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--mid); margin-bottom:4px; }
+  .balance-plan-badge { display:inline-block; background:var(--accent); color:var(--ink); font-size:0.7rem; font-weight:700; padding:3px 10px; margin-left:10px; vertical-align:middle; }
+
+  /* SETTINGS */
+  .settings-section { background:var(--white); border:1px solid var(--border); padding:28px; margin-bottom:24px; }
+  .settings-section h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.05rem; margin-bottom:18px; }
+  .settings-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); }
+  .settings-row:last-child { border-bottom:none; }
+  .settings-row-label { font-size:0.875rem; }
+  .settings-row-desc { font-size:0.78rem; color:var(--mid); margin-top:2px; }
+
+  .theme-toggle { display:flex; border:1px solid var(--border); }
+  .theme-toggle button { padding:7px 14px; font-size:0.78rem; background:none; border:none; cursor:pointer; color:var(--mid); font-family:'Inter',sans-serif; border-right:1px solid var(--border); transition:all 0.15s; }
+  .theme-toggle button:last-child { border-right:none; }
+  .theme-toggle button.active { background:var(--ink); color:var(--paper); }
+
+  .pricing-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
+  .pricing-card { border:1px solid var(--border); padding:20px; text-align:center; cursor:pointer; transition:border-color 0.2s; }
+  .pricing-card:hover { border-color:var(--ink); }
+  .pricing-card .count { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; }
+  .pricing-card .price { font-size:1.5rem; font-weight:700; font-family:'Syne',sans-serif; margin:6px 0; }
+  .pricing-card .per { font-size:0.7rem; color:var(--mid); }
+  .pricing-card.subscription { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .pricing-card.subscription .per { color:var(--mid); }
+
+  .referral-box { background:var(--paper); border:1px dashed var(--border); padding:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .referral-code { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; letter-spacing:0.05em; }
+
+  .faq-item { border-bottom:1px solid var(--border); padding:16px 0; }
+  .faq-item:last-child { border-bottom:none; }
+  .faq-q { font-size:0.9rem; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+  .faq-a { font-size:0.85rem; color:var(--mid); margin-top:10px; line-height:1.7; }
+
+  .contact-row { display:flex; align-items:center; gap:10px; font-size:0.875rem; padding:10px 0; }
+  .contact-row a { color:var(--ink); text-decoration:underline; }
 
   @media (max-width:768px) {
     .nav { padding:12px 16px; }
@@ -277,6 +396,8 @@ const styles = `
     .gen-layout { grid-template-columns:1fr; }
     .profile-grid { grid-template-columns:1fr; }
     .upgrade-plans { grid-template-columns:1fr; }
+    .pricing-cards { grid-template-columns:1fr 1fr; }
+    .balance-bar { flex-direction:column; align-items:flex-start; gap:12px; }
   }
 `;
 
@@ -515,6 +636,8 @@ Instructions:
 
       // Save to history
       await supabase.from("letters").insert({ user_id: user.id, job_title: jobTitle, company, content: text, created_at: new Date().toISOString() });
+      // Log as transaction even though free — for balance history visibility
+      await supabase.from("transactions").insert({ user_id: user.id, type: "free_letter", amount: 0, description: `${jobTitle} @ ${company}` });
       setFreeLeft(p => Math.max(0, p-1));
     } catch(e) {
       setError(t.errorOccurred);
@@ -647,19 +770,136 @@ function HistoryTab({ user, t }) {
   );
 }
 
-function Dashboard({ user, lang, t }) {
+function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
+  const [openFaq, setOpenFaq] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  async function changeTheme(value) {
+    setTheme(value);
+    await supabase.from("profiles").upsert({ id: user.id, theme_preference: value, updated_at: new Date().toISOString() });
+  }
+
+  function copyReferral() {
+    const code = profile?.referral_code || "";
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(()=>setCopied(false), 2000);
+  }
+
+  const faqs = [
+    [t.faq1q, t.faq1a],
+    [t.faq2q, t.faq2a],
+    [t.faq3q, t.faq3a],
+    [t.faq4q, t.faq4a],
+  ];
+
+  return (
+    <div>
+      {/* Balance & Plan */}
+      <div className="settings-section">
+        <h3>{t.balance}</h3>
+        <div className="balance-bar">
+          <div>
+            <div className="balance-label">{t.yourBalance}</div>
+            <div className="balance-amount">
+              ${(profile?.balance || 0).toFixed(2)}
+              {profile?.plan === "pro" && <span className="balance-plan-badge">{t.proPlan}</span>}
+            </div>
+          </div>
+        </div>
+        <div className="pricing-cards">
+          <div className="pricing-card">
+            <div className="count">{t.pack5}</div>
+            <div className="price">$4</div>
+            <div className="per">$0.80 / letter</div>
+          </div>
+          <div className="pricing-card">
+            <div className="count">{t.pack15}</div>
+            <div className="price">$10</div>
+            <div className="per">$0.67 / letter</div>
+          </div>
+          <div className="pricing-card">
+            <div className="count">{t.pack50}</div>
+            <div className="price">$25</div>
+            <div className="per">$0.50 / letter</div>
+          </div>
+          <div className="pricing-card subscription">
+            <div className="count">{t.proPlan}</div>
+            <div className="price">$9</div>
+            <div className="per">{t.perMonth}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Theme */}
+      <div className="settings-section">
+        <h3>{t.theme}</h3>
+        <div className="settings-row">
+          <div className="settings-row-label">{t.theme}</div>
+          <div className="theme-toggle">
+            {[["auto",t.themeAuto],["light",t.themeLight],["dark",t.themeDark]].map(([k,v]) => (
+              <button key={k} className={theme===k?"active":""} onClick={()=>changeTheme(k)}>{v}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Referral */}
+      <div className="settings-section">
+        <h3>{t.referralTitle}</h3>
+        <p style={{fontSize:"0.85rem", color:"var(--mid)", marginBottom:"16px"}}>{t.referralDesc}</p>
+        <div className="referral-box">
+          <span className="referral-code">{profile?.referral_code || "—"}</span>
+          <button className="btn btn-primary btn-sm" onClick={copyReferral}>{copied ? t.copied : t.copyCode}</button>
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="settings-section">
+        <h3>{t.faqTitle}</h3>
+        {faqs.map(([q,a], i) => (
+          <div className="faq-item" key={i}>
+            <div className="faq-q" onClick={()=>setOpenFaq(openFaq===i?null:i)}>
+              {q} <span>{openFaq===i ? "−" : "+"}</span>
+            </div>
+            {openFaq===i && <div className="faq-a">{a}</div>}
+          </div>
+        ))}
+      </div>
+
+      {/* Contact */}
+      <div className="settings-section">
+        <h3>{t.contactTitle}</h3>
+        <div className="contact-row">✉️ <a href="mailto:support@letterdrop.app">support@letterdrop.app</a></div>
+        <div className="contact-row">💬 <a href="https://t.me/letterdrop" target="_blank" rel="noreferrer">@letterdrop</a></div>
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ user, lang, theme, setTheme, t }) {
   const [tab, setTab] = useState("generate");
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      setProfile(data);
+    }
+    load();
+  }, [user.id, tab]);
 
   return (
     <div className="page">
       <div className="tabs">
-        {[["generate", t.generate], ["profile", t.profile], ["history", t.history]].map(([k,v]) => (
+        {[["generate", t.generate], ["profile", t.profile], ["history", t.history], ["settings", t.settings]].map(([k,v]) => (
           <button key={k} className={`tab${tab===k?" active":""}`} onClick={()=>setTab(k)}>{v}</button>
         ))}
       </div>
       {tab === "profile" && <ProfileTab user={user} t={t} />}
       {tab === "generate" && <GenerateTab user={user} lang={lang} t={t} />}
       {tab === "history" && <HistoryTab user={user} t={t} />}
+      {tab === "settings" && <SettingsTab user={user} profile={profile} theme={theme} setTheme={setTheme} t={t} />}
     </div>
   );
 }
@@ -670,18 +910,51 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [screen, setScreen] = useState("hero"); // hero | signin | signup | dash
   const [authMode, setAuthMode] = useState("signup");
+  const [theme, setTheme] = useState("auto");
   const t = T[lang];
+
+  // Resolve "auto" theme based on system preference
+  const resolvedTheme = theme === "auto"
+    ? (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : theme;
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+  }, [resolvedTheme]);
+
+  useEffect(() => {
+    if (theme !== "auto") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => document.documentElement.setAttribute("data-theme", mq.matches ? "dark" : "light");
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({data:{session}}) => {
-      if (session?.user) { setUser(session.user); setScreen("dash"); }
+      if (session?.user) {
+        setUser(session.user);
+        setScreen("dash");
+        loadThemePreference(session.user.id);
+      }
     });
     const { data:{subscription} } = supabase.auth.onAuthStateChange((_,session) => {
-      if (session?.user) { setUser(session.user); setScreen("dash"); }
-      else { setUser(null); setScreen("hero"); }
+      if (session?.user) {
+        setUser(session.user);
+        setScreen("dash");
+        loadThemePreference(session.user.id);
+      } else {
+        setUser(null);
+        setScreen("hero");
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  async function loadThemePreference(userId) {
+    const { data } = await supabase.from("profiles").select("theme_preference").eq("id", userId).single();
+    if (data?.theme_preference) setTheme(data.theme_preference);
+  }
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -700,7 +973,7 @@ export default function App() {
       {screen === "auth" && (
         <AuthForm mode={authMode} setMode={setAuthMode} onAuth={()=>setScreen("dash")} t={t} />
       )}
-      {screen === "dash" && user && <Dashboard user={user} lang={lang} t={t} />}
+      {screen === "dash" && user && <Dashboard user={user} lang={lang} theme={theme} setTheme={setTheme} t={t} />}
     </>
   );
 }
