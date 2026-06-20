@@ -103,6 +103,8 @@ const T = {
     statRecentActivity: "Recent activity",
     statNoActivityYet: "Nothing here yet — generate your first letter.",
     statThisWeek: "this week",
+    avatarTitle: "Avatar",
+    avatarDesc: "Pick an avatar for your profile.",
   },
   ru: {
     brand: "LetterDrop",
@@ -188,6 +190,8 @@ const T = {
     statRecentActivity: "Последняя активность",
     statNoActivityYet: "Тут пока пусто — сгенерируй первое письмо.",
     statThisWeek: "за неделю",
+    avatarTitle: "Аватар",
+    avatarDesc: "Выбери аватар для своего профиля.",
   },
   kz: {
     brand: "LetterDrop",
@@ -273,6 +277,8 @@ const T = {
     statRecentActivity: "Соңғы әрекеттер",
     statNoActivityYet: "Әзірге бос — алғашқы хатыңды жаса.",
     statThisWeek: "осы аптада",
+    avatarTitle: "Аватар",
+    avatarDesc: "Профиліне аватар таңда.",
   }
 };
 
@@ -439,7 +445,8 @@ const styles = `
 
   /* OVERVIEW */
   .profile-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
-  .profile-avatar { width:52px; height:52px; flex-shrink:0; background:var(--accent); color:#0D0D0D; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; }
+  .profile-avatar { width:52px; height:52px; flex-shrink:0; background:var(--accent); color:#0D0D0D; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; overflow:hidden; }
+  .profile-avatar-icon { width:60%; height:60%; }
   .profile-header-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:-0.01em; }
   .profile-header-role { font-size:0.82rem; color:var(--mid); margin-top:2px; }
   .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
@@ -459,6 +466,11 @@ const styles = `
   .activity-title { font-size:0.875rem; font-weight:600; }
   .activity-company { font-size:0.78rem; color:var(--mid); margin-top:2px; }
   .activity-date { font-size:0.75rem; color:var(--mid); }
+  .avatar-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:10px; }
+  .avatar-option { padding:0; border:2px solid var(--border); cursor:pointer; aspect-ratio:1; overflow:hidden; transition:border-color 0.15s; display:flex; align-items:center; justify-content:center; }
+  .avatar-option:hover { border-color:var(--mid); }
+  .avatar-option.selected { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+  .avatar-option svg { width:55%; height:55%; }
 
   @media (max-width:768px) {
     .nav { padding:12px 16px; }
@@ -470,6 +482,7 @@ const styles = `
     .pricing-cards { grid-template-columns:1fr 1fr; }
     .balance-bar { flex-direction:column; align-items:flex-start; gap:12px; }
     .stat-grid { grid-template-columns:1fr; }
+    .avatar-grid { grid-template-columns:repeat(4,1fr); }
   }
 `;
 
@@ -810,7 +823,7 @@ function OverviewTab({ user, t }) {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name, current_role, balance, plan, plan_expires_at")
+        .select("full_name, current_role, avatar_seed, balance, plan, plan_expires_at")
         .eq("id", user.id)
         .single();
 
@@ -863,6 +876,7 @@ function OverviewTab({ user, t }) {
       setStats({
         fullName: profile?.full_name || "",
         currentRole: profile?.current_role || "",
+        avatarSeed: profile?.avatar_seed || "",
         totalLetters,
         lettersTrend,
         balance: profile?.balance || 0,
@@ -883,8 +897,14 @@ function OverviewTab({ user, t }) {
   return (
     <div>
       <div className="profile-header">
-        <div className="profile-avatar">
-          {(stats.fullName?.trim()?.[0] || user.email?.[0] || "?").toUpperCase()}
+        <div className="profile-avatar" style={stats.avatarSeed ? {background:`#${stats.avatarSeed}`} : undefined}>
+          {stats.avatarSeed
+            ? <svg viewBox="0 0 24 24" fill="none" className="profile-avatar-icon">
+                <circle cx="12" cy="8" r="4" fill="rgba(255,255,255,0.92)"/>
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="rgba(255,255,255,0.92)" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+              </svg>
+            : (stats.fullName?.trim()?.[0] || user.email?.[0] || "?").toUpperCase()
+          }
         </div>
         <div>
           <div className="profile-header-name">{stats.fullName?.trim() || user.email}</div>
@@ -1051,6 +1071,14 @@ function HistoryTab({ user, t }) {
 function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
   const [openFaq, setOpenFaq] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [avatarSeed, setAvatarSeed] = useState(profile?.avatar_seed || "");
+
+  const AVATAR_COLORS = ["c8f135", "0d0d0d", "6b6b6b", "2a2a2a", "9ad6ff", "f2a65a", "f472b6", "7c8cf8"];
+
+  async function selectAvatar(color) {
+    setAvatarSeed(color);
+    await supabase.from("profiles").upsert({ id: user.id, avatar_seed: color, updated_at: new Date().toISOString() });
+  }
 
   async function changeTheme(value) {
     setTheme(value);
@@ -1107,6 +1135,28 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
             <div className="price">$9</div>
             <div className="per">{t.perMonth}</div>
           </div>
+        </div>
+      </div>
+
+      {/* Avatar */}
+      <div className="settings-section">
+        <h3>{t.avatarTitle}</h3>
+        <p style={{fontSize:"0.85rem", color:"var(--mid)", marginBottom:"16px"}}>{t.avatarDesc}</p>
+        <div className="avatar-grid">
+          {AVATAR_COLORS.map(color => (
+            <button
+              key={color}
+              className={`avatar-option${avatarSeed===color?" selected":""}`}
+              onClick={()=>selectAvatar(color)}
+              style={{background:`#${color}`}}
+              aria-label={color}
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="4" fill="rgba(255,255,255,0.92)"/>
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="rgba(255,255,255,0.92)" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+              </svg>
+            </button>
+          ))}
         </div>
       </div>
 
