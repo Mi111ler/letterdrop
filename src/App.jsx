@@ -102,6 +102,7 @@ const T = {
     statWeeklyActivity: "Weekly activity",
     statRecentActivity: "Recent activity",
     statNoActivityYet: "Nothing here yet — generate your first letter.",
+    statThisWeek: "this week",
   },
   ru: {
     brand: "LetterDrop",
@@ -186,6 +187,7 @@ const T = {
     statWeeklyActivity: "Активность по неделям",
     statRecentActivity: "Последняя активность",
     statNoActivityYet: "Тут пока пусто — сгенерируй первое письмо.",
+    statThisWeek: "за неделю",
   },
   kz: {
     brand: "LetterDrop",
@@ -270,6 +272,7 @@ const T = {
     statWeeklyActivity: "Апта сайынғы белсенділік",
     statRecentActivity: "Соңғы әрекеттер",
     statNoActivityYet: "Әзірге бос — алғашқы хатыңды жаса.",
+    statThisWeek: "осы аптада",
   }
 };
 
@@ -437,9 +440,14 @@ const styles = `
   /* OVERVIEW */
   .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
   .stat-card { background:var(--white); border:1px solid var(--border); padding:22px 24px; }
-  .stat-label { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--mid); margin-bottom:8px; }
+  .stat-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; }
+  .stat-icon { width:18px; height:18px; color:var(--mid); flex-shrink:0; }
+  .stat-label { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--mid); margin-bottom:0; }
   .stat-value { font-family:'Syne',sans-serif; font-weight:800; font-size:1.9rem; letter-spacing:-0.02em; }
   .stat-sub { font-size:0.75rem; color:var(--accent); margin-top:4px; font-weight:600; }
+  .stat-trend { display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; font-weight:600; margin-top:6px; }
+  .stat-trend.up { color:var(--success); }
+  .stat-trend.down { color:var(--danger); }
   .overview-chart-card { background:var(--white); border:1px solid var(--border); padding:24px; margin-bottom:20px; }
   .overview-chart-card h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:16px; }
   .activity-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
@@ -810,6 +818,18 @@ function OverviewTab({ user, t }) {
 
       const totalLetters = letters?.length || 0;
 
+      // Тренд: писем за последние 7 дней vs предыдущие 7 дней
+      const now0 = new Date();
+      const last7Start = new Date(now0); last7Start.setDate(now0.getDate() - 7);
+      const prev7Start = new Date(now0); prev7Start.setDate(now0.getDate() - 14);
+
+      const last7Count = (letters || []).filter(l => new Date(l.created_at) >= last7Start).length;
+      const prev7Count = (letters || []).filter(l => {
+        const d = new Date(l.created_at);
+        return d >= prev7Start && d < last7Start;
+      }).length;
+      const lettersTrend = last7Count - prev7Count;
+
       const weeks = [];
       const now = new Date();
       for (let i = 7; i >= 0; i--) {
@@ -838,6 +858,7 @@ function OverviewTab({ user, t }) {
 
       setStats({
         totalLetters,
+        lettersTrend,
         balance: profile?.balance || 0,
         plan: profile?.plan || "free",
         proDaysLeft,
@@ -857,15 +878,34 @@ function OverviewTab({ user, t }) {
     <div>
       <div className="stat-grid">
         <div className="stat-card">
-          <div className="stat-label">{t.statTotalLetters}</div>
+          <div className="stat-card-top">
+            <div className="stat-label">{t.statTotalLetters}</div>
+            <svg className="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg>
+          </div>
           <div className="stat-value">{stats.totalLetters}</div>
+          {stats.lettersTrend !== 0 && (
+            <div className={`stat-trend ${stats.lettersTrend > 0 ? "up" : "down"}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" width="11" height="11">
+                {stats.lettersTrend > 0
+                  ? <path d="M6 18L18 6M18 6H9M18 6v9"/>
+                  : <path d="M6 6l12 12M18 18H9M18 18V9"/>}
+              </svg>
+              {stats.lettersTrend > 0 ? `+${stats.lettersTrend}` : stats.lettersTrend} {t.statThisWeek}
+            </div>
+          )}
         </div>
         <div className="stat-card">
-          <div className="stat-label">{t.statBalance}</div>
+          <div className="stat-card-top">
+            <div className="stat-label">{t.statBalance}</div>
+            <svg className="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 .8 3 2-1 1.8-3 2-3 1-3 2 1.3 2 3 2 3-1.1 3-2.5"/></svg>
+          </div>
           <div className="stat-value">${stats.balance.toFixed(2)}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">{t.statPlan}</div>
+          <div className="stat-card-top">
+            <div className="stat-label">{t.statPlan}</div>
+            <svg className="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l2.4 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.6-1.4z"/></svg>
+          </div>
           <div className="stat-value">
             {stats.plan === "pro" ? t.proPlan : t.plan_free}
           </div>
