@@ -90,6 +90,8 @@ const T = {
     proPlan: "Pro — Unlimited",
     perMonth: "/ month",
     bestValue: "Best value",
+    referralCodeLabel: "Referral code (optional)",
+    referralCodePlaceholder: "Enter a friend's code",
   },
   ru: {
     brand: "LetterDrop",
@@ -163,6 +165,8 @@ const T = {
     proPlan: "Pro — Безлимит",
     perMonth: "/ месяц",
     bestValue: "Выгоднее всего",
+    referralCodeLabel: "Реферальный код (необязательно)",
+    referralCodePlaceholder: "Введи код друга",
   },
   kz: {
     brand: "LetterDrop",
@@ -236,6 +240,8 @@ const T = {
     proPlan: "Pro — Шексіз",
     perMonth: "/ ай",
     bestValue: "Ең тиімді",
+    referralCodeLabel: "Реферал коды (міндетті емес)",
+    referralCodePlaceholder: "Дос кодын енгіз",
   }
 };
 
@@ -259,7 +265,7 @@ const styles = `
   /* NAV */
   .nav { display:flex; justify-content:space-between; align-items:center; padding:16px 40px; border-bottom:1px solid var(--border); background:var(--paper); position:sticky; top:0; z-index:100; }
   .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:-0.03em; }
-  .nav-logo span { background:var(--accent); padding:1px 5px; }
+  .nav-logo span { background:var(--accent); color:#0D0D0D; padding:1px 5px; }
   .nav-right { display:flex; align-items:center; gap:12px; }
   .nav-lang { display:flex; gap:4px; }
   .lang-btn { background:none; border:1px solid var(--border); padding:4px 8px; font-size:0.75rem; cursor:pointer; font-family:'Inter',sans-serif; color:var(--mid); transition:all 0.15s; }
@@ -286,7 +292,7 @@ const styles = `
   .hero { text-align:center; padding:100px 24px 80px; border-bottom:1px solid var(--border); }
   .hero-tag { display:inline-block; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid); margin-bottom:20px; }
   .hero h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(2.2rem,5vw,4rem); letter-spacing:-0.04em; line-height:1.05; margin-bottom:20px; }
-  .hero h1 em { font-style:normal; background:var(--accent); padding:0 4px; }
+  .hero h1 em { font-style:normal; background:var(--accent); color:#0D0D0D; padding:0 4px; }
   .hero p { font-size:1.05rem; color:var(--mid); max-width:440px; margin:0 auto 36px; line-height:1.7; }
   .hero-actions { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
 
@@ -357,7 +363,7 @@ const styles = `
   .balance-bar { display:flex; align-items:center; justify-content:space-between; background:var(--white); border:1px solid var(--border); padding:18px 24px; margin-bottom:24px; }
   .balance-amount { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; letter-spacing:-0.02em; }
   .balance-label { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--mid); margin-bottom:4px; }
-  .balance-plan-badge { display:inline-block; background:var(--accent); color:var(--ink); font-size:0.7rem; font-weight:700; padding:3px 10px; margin-left:10px; vertical-align:middle; }
+  .balance-plan-badge { display:inline-block; background:var(--accent); color:#0D0D0D; font-size:0.7rem; font-weight:700; padding:3px 10px; margin-left:10px; vertical-align:middle; }
 
   /* SETTINGS */
   .settings-section { background:var(--white); border:1px solid var(--border); padding:28px; margin-bottom:24px; }
@@ -458,6 +464,7 @@ function AuthForm({ mode, setMode, onAuth, t }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -469,11 +476,15 @@ function AuthForm({ mode, setMode, onAuth, t }) {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error: e } = await supabase.auth.signUp({
+        const { data, error: e } = await supabase.auth.signUp({
           email, password,
           options: { data: { full_name: name } }
         });
         if (e) throw e;
+        // Store referral code on the new profile (bonus credited later via DB trigger on email confirm)
+        if (data?.user && referralCode.trim()) {
+          await supabase.from("profiles").upsert({ id: data.user.id, referred_by: referralCode.trim() });
+        }
         setNotice(t.verifyNotice);
       } else {
         const { error: e } = await supabase.auth.signInWithPassword({ email, password });
@@ -511,6 +522,12 @@ function AuthForm({ mode, setMode, onAuth, t }) {
             </button>
           </div>
         </div>
+        {mode === "signup" && (
+          <div className="form-group">
+            <label>{t.referralCodeLabel}</label>
+            <input className="form-input" value={referralCode} onChange={e=>setReferralCode(e.target.value)} placeholder={t.referralCodePlaceholder} />
+          </div>
+        )}
         <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleSubmit} disabled={loading}>
           {loading ? "..." : mode==="signup" ? t.signUp : t.signIn}
         </button>
