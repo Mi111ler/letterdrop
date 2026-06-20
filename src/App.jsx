@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "https://esm.sh/recharts@2";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 // Replace with your Supabase project URL and anon key
@@ -92,6 +93,15 @@ const T = {
     bestValue: "Best value",
     referralCodeLabel: "Referral code (optional)",
     referralCodePlaceholder: "Enter a friend's code",
+    overviewTitle: "Overview",
+    loadingOverview: "Loading...",
+    statTotalLetters: "Letters generated",
+    statBalance: "Balance",
+    statPlan: "Plan",
+    statProDaysLeft: (n) => `${n} day${n !== 1 ? "s" : ""} left`,
+    statWeeklyActivity: "Weekly activity",
+    statRecentActivity: "Recent activity",
+    statNoActivityYet: "Nothing here yet — generate your first letter.",
   },
   ru: {
     brand: "LetterDrop",
@@ -167,6 +177,15 @@ const T = {
     bestValue: "Выгоднее всего",
     referralCodeLabel: "Реферальный код (необязательно)",
     referralCodePlaceholder: "Введи код друга",
+    overviewTitle: "Обзор",
+    loadingOverview: "Загрузка...",
+    statTotalLetters: "Писем сгенерировано",
+    statBalance: "Баланс",
+    statPlan: "Тариф",
+    statProDaysLeft: (n) => `Осталось ${n} дн.`,
+    statWeeklyActivity: "Активность по неделям",
+    statRecentActivity: "Последняя активность",
+    statNoActivityYet: "Тут пока пусто — сгенерируй первое письмо.",
   },
   kz: {
     brand: "LetterDrop",
@@ -242,6 +261,15 @@ const T = {
     bestValue: "Ең тиімді",
     referralCodeLabel: "Реферал коды (міндетті емес)",
     referralCodePlaceholder: "Дос кодын енгіз",
+    overviewTitle: "Шолу",
+    loadingOverview: "Жүктелуде...",
+    statTotalLetters: "Жасалған хаттар",
+    statBalance: "Баланс",
+    statPlan: "Жоспар",
+    statProDaysLeft: (n) => `${n} күн қалды`,
+    statWeeklyActivity: "Апта сайынғы белсенділік",
+    statRecentActivity: "Соңғы әрекеттер",
+    statNoActivityYet: "Әзірге бос — алғашқы хатыңды жаса.",
   }
 };
 
@@ -406,6 +434,20 @@ const styles = `
   .whatsapp-widget:hover { opacity:0.88; }
   .whatsapp-icon { display:flex; align-items:center; }
 
+  /* OVERVIEW */
+  .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+  .stat-card { background:var(--white); border:1px solid var(--border); padding:22px 24px; }
+  .stat-label { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--mid); margin-bottom:8px; }
+  .stat-value { font-family:'Syne',sans-serif; font-weight:800; font-size:1.9rem; letter-spacing:-0.02em; }
+  .stat-sub { font-size:0.75rem; color:var(--accent); margin-top:4px; font-weight:600; }
+  .overview-chart-card { background:var(--white); border:1px solid var(--border); padding:24px; margin-bottom:20px; }
+  .overview-chart-card h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:16px; }
+  .activity-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+  .activity-row:last-child { border-bottom:none; }
+  .activity-title { font-size:0.875rem; font-weight:600; }
+  .activity-company { font-size:0.78rem; color:var(--mid); margin-top:2px; }
+  .activity-date { font-size:0.75rem; color:var(--mid); }
+
   @media (max-width:768px) {
     .nav { padding:12px 16px; }
     .page { padding:32px 16px; }
@@ -415,6 +457,7 @@ const styles = `
     .upgrade-plans { grid-template-columns:1fr; }
     .pricing-cards { grid-template-columns:1fr 1fr; }
     .balance-bar { flex-direction:column; align-items:flex-start; gap:12px; }
+    .stat-grid { grid-template-columns:1fr; }
   }
 `;
 
@@ -743,6 +786,157 @@ Instructions:
   );
 }
 
+function OverviewTab({ user, t }) {
+  const [stats, setStats] = useState(null);
+  const [weekly, setWeekly] = useState([]);
+  const [recent, setRecent] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("balance, plan, plan_expires_at")
+        .eq("id", user.id)
+        .single();
+
+      const { data: letters } = await supabase
+        .from("letters")
+        .select("id, job_title, company, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      const totalLetters = letters?.length || 0;
+
+      const weeks = [];
+      const now = new Date();
+      for (let i = 7; i >= 0; i--) {
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - i * 7 - now.getDay());
+        weekStart.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        const count = (letters || []).filter(l => {
+          const d = new Date(l.created_at);
+          return d >= weekStart && d < weekEnd;
+        }).length;
+
+        weeks.push({
+          label: `${weekStart.getDate()}.${weekStart.getMonth() + 1}`,
+          count,
+        });
+      }
+
+      let proDaysLeft = null;
+      if (profile?.plan === "pro" && profile?.plan_expires_at) {
+        const diff = new Date(profile.plan_expires_at) - now;
+        proDaysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+      }
+
+      setStats({
+        totalLetters,
+        balance: profile?.balance || 0,
+        plan: profile?.plan || "free",
+        proDaysLeft,
+      });
+      setWeekly(weeks);
+      setRecent((letters || []).slice(0, 5));
+      setLoading(false);
+    }
+    load();
+  }, [user.id]);
+
+  if (loading) {
+    return <div style={{ color: "var(--mid)", fontSize: "0.9rem" }}>{t.loadingOverview}</div>;
+  }
+
+  return (
+    <div>
+      <div className="stat-grid">
+        <div className="stat-card">
+          <div className="stat-label">{t.statTotalLetters}</div>
+          <div className="stat-value">{stats.totalLetters}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">{t.statBalance}</div>
+          <div className="stat-value">${stats.balance.toFixed(2)}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">{t.statPlan}</div>
+          <div className="stat-value">
+            {stats.plan === "pro" ? t.proPlan : t.plan_free}
+          </div>
+          {stats.plan === "pro" && stats.proDaysLeft !== null && (
+            <div className="stat-sub">{t.statProDaysLeft(stats.proDaysLeft)}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="overview-chart-card">
+        <h3>{t.statWeeklyActivity}</h3>
+        {stats.totalLetters === 0 ? (
+          <div className="output-empty">{t.statNoActivityYet}</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={weekly} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+              <XAxis
+                dataKey="label"
+                axisLine={{ stroke: "var(--border)" }}
+                tickLine={false}
+                tick={{ fill: "var(--mid)", fontSize: 11, fontFamily: "Inter" }}
+              />
+              <YAxis
+                allowDecimals={false}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "var(--mid)", fontSize: 11, fontFamily: "Inter" }}
+                width={28}
+              />
+              <Tooltip
+                cursor={{ fill: "var(--border)", opacity: 0.4 }}
+                contentStyle={{
+                  background: "var(--ink)",
+                  border: "none",
+                  borderRadius: 0,
+                  fontSize: "0.78rem",
+                  fontFamily: "Inter",
+                  color: "var(--paper)",
+                }}
+                labelStyle={{ color: "var(--paper)" }}
+              />
+              <Bar dataKey="count" fill="var(--accent)" radius={0} maxBarSize={28} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="overview-chart-card">
+        <h3>{t.statRecentActivity}</h3>
+        {recent.length === 0 ? (
+          <div className="output-empty">{t.statNoActivityYet}</div>
+        ) : (
+          <div>
+            {recent.map(l => (
+              <div className="activity-row" key={l.id}>
+                <div>
+                  <div className="activity-title">{l.job_title}</div>
+                  <div className="activity-company">{l.company}</div>
+                </div>
+                <div className="activity-date">
+                  {new Date(l.created_at).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function HistoryTab({ user, t }) {
   const [letters, setLetters] = useState([]);
   const [expanded, setExpanded] = useState(null);
@@ -913,7 +1107,7 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
 }
 
 function Dashboard({ user, lang, theme, setTheme, t }) {
-  const [tab, setTab] = useState("generate");
+  const [tab, setTab] = useState("overview");
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -927,10 +1121,11 @@ function Dashboard({ user, lang, theme, setTheme, t }) {
   return (
     <div className="page">
       <div className="tabs">
-        {[["generate", t.generate], ["profile", t.profile], ["history", t.history], ["settings", t.settings]].map(([k,v]) => (
+        {[["overview", t.overviewTitle], ["generate", t.generate], ["profile", t.profile], ["history", t.history], ["settings", t.settings]].map(([k,v]) => (
           <button key={k} className={`tab${tab===k?" active":""}`} onClick={()=>setTab(k)}>{v}</button>
         ))}
       </div>
+      {tab === "overview" && <OverviewTab user={user} t={t} />}
       {tab === "profile" && <ProfileTab user={user} t={t} />}
       {tab === "generate" && <GenerateTab user={user} lang={lang} t={t} />}
       {tab === "history" && <HistoryTab user={user} t={t} />}
