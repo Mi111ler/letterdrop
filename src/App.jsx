@@ -438,6 +438,10 @@ const styles = `
   .whatsapp-icon { display:flex; align-items:center; }
 
   /* OVERVIEW */
+  .profile-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .profile-avatar { width:52px; height:52px; flex-shrink:0; background:var(--accent); color:#0D0D0D; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; }
+  .profile-header-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:-0.01em; }
+  .profile-header-role { font-size:0.82rem; color:var(--mid); margin-top:2px; }
   .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
   .stat-card { background:var(--white); border:1px solid var(--border); padding:22px 24px; }
   .stat-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; }
@@ -806,7 +810,7 @@ function OverviewTab({ user, t }) {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("balance, plan, plan_expires_at")
+        .select("full_name, current_role, balance, plan, plan_expires_at")
         .eq("id", user.id)
         .single();
 
@@ -857,6 +861,8 @@ function OverviewTab({ user, t }) {
       }
 
       setStats({
+        fullName: profile?.full_name || "",
+        currentRole: profile?.current_role || "",
         totalLetters,
         lettersTrend,
         balance: profile?.balance || 0,
@@ -876,6 +882,16 @@ function OverviewTab({ user, t }) {
 
   return (
     <div>
+      <div className="profile-header">
+        <div className="profile-avatar">
+          {(stats.fullName?.trim()?.[0] || user.email?.[0] || "?").toUpperCase()}
+        </div>
+        <div>
+          <div className="profile-header-name">{stats.fullName?.trim() || user.email}</div>
+          {stats.currentRole && <div className="profile-header-role">{stats.currentRole}</div>}
+        </div>
+      </div>
+
       <div className="stat-grid">
         <div className="stat-card">
           <div className="stat-card-top">
