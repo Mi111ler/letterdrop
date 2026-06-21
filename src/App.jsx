@@ -1077,7 +1077,11 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
 
   async function selectAvatar(color) {
     setAvatarSeed(color);
-    await supabase.from("profiles").upsert({ id: user.id, avatar_seed: color, updated_at: new Date().toISOString() });
+    const { error } = await supabase.from("profiles").upsert({ id: user.id, avatar_seed: color, updated_at: new Date().toISOString() });
+    if (error) {
+      alert("Ошибка сохранения аватара: " + error.message);
+      console.error("avatar save error:", error);
+    }
   }
 
   async function changeTheme(value) {
