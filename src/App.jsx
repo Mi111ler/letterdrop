@@ -1072,16 +1072,25 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
   const [openFaq, setOpenFaq] = useState(null);
   const [copied, setCopied] = useState(false);
   const [avatarSeed, setAvatarSeed] = useState(profile?.avatar_seed || "");
+  const [avatarStatus, setAvatarStatus] = useState("");
 
   const AVATAR_COLORS = ["c8f135", "0d0d0d", "6b6b6b", "2a2a2a", "9ad6ff", "f2a65a", "f472b6", "7c8cf8"];
 
-  async function selectAvatar(color) {
-    setAvatarSeed(color);
-    const { error } = await supabase.from("profiles").upsert({ id: user.id, avatar_seed: color, updated_at: new Date().toISOString() });
+  useEffect(() => {
+    setAvatarSeed(profile?.avatar_seed || "");
+  }, [profile?.avatar_seed]);
+
+  async function saveAvatar() {
+    setAvatarStatus("saving");
+    const { error } = await supabase.from("profiles").upsert({ id: user.id, avatar_seed: avatarSeed, updated_at: new Date().toISOString() });
     if (error) {
       alert("Ошибка сохранения аватара: " + error.message);
-      console.error("avatar save error:", error);
+      setAvatarStatus("");
+      return;
     }
+    setAvatarStatus("saved");
+    if (onProfileUpdate) onProfileUpdate();
+    setTimeout(()=>setAvatarStatus(""), 2000);
   }
 
   async function changeTheme(value) {
@@ -1151,7 +1160,7 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
             <button
               key={color}
               className={`avatar-option${avatarSeed===color?" selected":""}`}
-              onClick={()=>selectAvatar(color)}
+              onClick={()=>setAvatarSeed(color)}
               style={{background:`#${color}`}}
               aria-label={color}
             >
@@ -1161,6 +1170,12 @@ function SettingsTab({ user, profile, onProfileUpdate, theme, setTheme, t }) {
               </svg>
             </button>
           ))}
+        </div>
+        <div className="save-row">
+          <button className="btn btn-primary" onClick={saveAvatar} disabled={avatarStatus==="saving"}>
+            {avatarStatus==="saving" ? t.saving : t.save}
+          </button>
+          {avatarStatus==="saved" && <span style={{color:"var(--success)",fontSize:"0.85rem"}}>{t.saved}</span>}
         </div>
       </div>
 
@@ -1220,12 +1235,13 @@ function Dashboard({ user, lang, theme, setTheme, t }) {
   const [tab, setTab] = useState("overview");
   const [profile, setProfile] = useState(null);
 
+  async function loadProfile() {
+    const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    setProfile(data);
+  }
+
   useEffect(() => {
-    async function load() {
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      setProfile(data);
-    }
-    load();
+    loadProfile();
   }, [user.id, tab]);
 
   return (
@@ -1239,7 +1255,7 @@ function Dashboard({ user, lang, theme, setTheme, t }) {
       {tab === "profile" && <ProfileTab user={user} t={t} />}
       {tab === "generate" && <GenerateTab user={user} lang={lang} t={t} />}
       {tab === "history" && <HistoryTab user={user} t={t} />}
-      {tab === "settings" && <SettingsTab user={user} profile={profile} theme={theme} setTheme={setTheme} t={t} />}
+      {tab === "settings" && <SettingsTab user={user} profile={profile} onProfileUpdate={loadProfile} theme={theme} setTheme={setTheme} t={t} />}
     </div>
   );
 }
