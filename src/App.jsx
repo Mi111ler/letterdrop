@@ -811,7 +811,7 @@ Instructions:
   );
 }
 
-function OverviewTab({ user, t }) {
+function OverviewTab({ user, profile, t }) {
   const [stats, setStats] = useState(null);
   const [weekly, setWeekly] = useState([]);
   const [recent, setRecent] = useState([]);
@@ -820,12 +820,6 @@ function OverviewTab({ user, t }) {
   useEffect(() => {
     async function load() {
       setLoading(true);
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name, current_role, avatar_seed, balance, plan, plan_expires_at")
-        .eq("id", user.id)
-        .single();
 
       const { data: letters } = await supabase
         .from("letters")
@@ -888,7 +882,7 @@ function OverviewTab({ user, t }) {
       setLoading(false);
     }
     load();
-  }, [user.id]);
+  }, [user.id, profile]);
 
   if (loading) {
     return <div style={{ color: "var(--mid)", fontSize: "0.9rem" }}>{t.loadingOverview}</div>;
@@ -1251,7 +1245,7 @@ function Dashboard({ user, lang, theme, setTheme, t }) {
           <button key={k} className={`tab${tab===k?" active":""}`} onClick={()=>setTab(k)}>{v}</button>
         ))}
       </div>
-      {tab === "overview" && <OverviewTab user={user} t={t} />}
+      {tab === "overview" && <OverviewTab user={user} profile={profile} t={t} />}
       {tab === "profile" && <ProfileTab user={user} t={t} />}
       {tab === "generate" && <GenerateTab user={user} lang={lang} t={t} />}
       {tab === "history" && <HistoryTab user={user} t={t} />}
